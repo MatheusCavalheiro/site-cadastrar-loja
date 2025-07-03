@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login e Cadastro de Loja</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f2f2f2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #45a049;
+    }
+
+    .toggle {
+      margin-top: 10px;
+      text-align: center;
+      cursor: pointer;
+      color: #007BFF;
+    }
+
+    .toggle:hover {
+      text-decoration: underline;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- LOGIN -->
+    <form id="loginForm">
+      <h2>Login da Loja</h2>
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="loginEmail" required />
+      </div>
+      <div class="form-group">
+        <label>Senha:</label>
+        <input type="password" id="loginPassword" required />
+      </div>
+      <button type="submit" class="btn">Entrar</button>
+      <p class="toggle" onclick="showCadastro()">Não tem conta? Cadastre-se</p>
+    </form>
+
+    <!-- CADASTRO -->
+    <form id="cadastroForm" class="hidden">
+      <h2>Cadastrar Loja</h2>
+
+      <div class="form-group">
+        <label>Nome da Loja:</label>
+        <input type="text" id="nomeLoja" required />
+      </div>
+
+      <div class="form-group">
+        <label>Telefone:</label>
+        <input type="text" id="telefone" pattern="\d{10,11}" maxlength="11" required />
+      </div>
+
+      <div class="form-group">
+        <label>CNPJ:</label>
+        <input type="text" id="cnpj" pattern="\d{14}" maxlength="14" required />
+      </div>
+
+      <div class="form-group">
+        <label>Endereço:</label>
+        <input type="text" id="endereco" required />
+      </div>
+
+      <div class="form-group">
+  <label>Categoria dos Produtos:</label>
+  <select id="categoria" required>
+    <option value="">Selecione uma categoria</option>
+    <option value="Materiais de construção">Materiais de construção</option>
+    <option value="Posto de gasolina">Posto de gasolina</option>
+    <option value="Farmácia">Farmácia</option>
+  </select>
+</div>
+
+
+      <div class="form-group">
+        <label>Email:</label>
+        <input type="email" id="cadastroEmail" required />
+      </div>
+
+      <div class="form-group">
+        <label>Senha:</label>
+        <input type="password" id="cadastroSenha" required />
+      </div>
+
+      <button type="submit" class="btn">Cadastrar</button>
+      <p class="toggle" onclick="showLogin()">Já tem conta? Fazer login</p>
+    </form>
+  </div>
+
+  <script>
+    const loginForm = document.getElementById('loginForm');
+    const cadastroForm = document.getElementById('cadastroForm');
+
+    function showCadastro() {
+      loginForm.classList.add('hidden');
+      cadastroForm.classList.remove('hidden');
+    }
+
+    function showLogin() {
+      cadastroForm.classList.add('hidden');
+      loginForm.classList.remove('hidden');
+    }
+
+    // Simulação de login (para depois integrar com Supabase)
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const senha = document.getElementById('loginPassword').value;
+      alert(`Login:\nEmail: ${email}\nSenha: ${senha}`);
+    });
+
+    // Simulação de cadastro
+    cadastroForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const loja = {
+        nome: document.getElementById('nomeLoja').value,
+        cnpj: document.getElementById('cnpj').value,
+        endereco: document.getElementById('endereco').value,
+        categoria: document.getElementById('categoria').value,
+        email: document.getElementById('cadastroEmail').value,
+        senha: document.getElementById('cadastroSenha').value
+      };
+      alert(`Cadastro da Loja:\nNome: ${loja.nome}\nCNPJ: ${loja.cnpj}\nEndereço: ${loja.endereco}\nCategoria: ${loja.categoria}\nEmail: ${loja.email}`);
+    });
+
+    function somenteNumeros(input) {
+  input.value = input.value.replace(/\D/g, '');
+}
+
+document.getElementById('cnpj').addEventListener('input', function () {
+  somenteNumeros(this);
+});
+
+document.getElementById('telefone').addEventListener('input', function () {
+  somenteNumeros(this);
+});
+
+  </script>
+</body>
+</html>
