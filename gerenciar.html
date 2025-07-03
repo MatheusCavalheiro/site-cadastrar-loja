@@ -1,67 +1,70 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-Bt">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Bem-vindo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gerenciar Loja</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
-    body {
-      background: linear-gradient(135deg, #4CAF50, #2E7D32);
-      color: white;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    .welcome-container {
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 40px;
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-      max-width: 400px;
-    }
-
-    h1 {
-      font-size: 32px;
-      margin-bottom: 20px;
-    }
-
-    p {
-      font-size: 18px;
-      margin-bottom: 30px;
-    }
-
-    .btn {
-      background-color: #ffffff;
-      color: #4CAF50;
-      border: none;
-      padding: 12px 25px;
-      font-size: 16px;
-      border-radius: 8px;
-      cursor: pointer;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .btn:hover {
-      background-color: #e6e6e6;
-    }
+    body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: auto; }
+    input, button { margin: 5px 0; padding: 8px; width: 100%; }
+    .produto { border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
+    .produto button { background: red; color: white; border: none; padding: 5px; margin-top: 5px; }
   </style>
 </head>
 <body>
-  <div class="welcome-container">
-    <h1>Bem-vindo ao nosso site!</h1>
-    <p>Aqui você pode cadastrar sua loja e começar a gerenciar seus produtos facilmente.</p>
-    <a href="index.html" class="btn">Entrar</a>
-  </div>
+  <h1>Gerenciar Loja</h1>
+  <p id="boasVindas"></p>
+  <h3>Adicionar Produto</h3>
+  <input type="text" id="nomeProduto" placeholder="Nome do Produto" />
+  <input type="number" id="precoProduto" placeholder="Preço" />
+  <button onclick="criarProduto()">Criar Produto</button>
+
+  <h3>Seus Produtos</h3>
+  <div id="listaProdutos"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script>
+    const supabase = supabase.createClient('https://SEU_URL.supabase.co', 'SEU_ANON_KEY');
+    const loja = localStorage.getItem('lojaLogada');
+    if (!loja) window.location.href = 'index.html';
+
+    document.getElementById('boasVindas').textContent = `Bem-vindo(a), ${loja}!`;
+
+    async function criarProduto() {
+      const nome = document.getElementById('nomeProduto').value.trim();
+      const preco = parseFloat(document.getElementById('precoProduto').value);
+      if (!nome || isNaN(preco)) return alert('Preencha tudo corretamente');
+
+      const { error } = await supabase.from('produtos').insert([{ nome, preco, loja }]);
+      if (error) return alert('Erro: ' + error.message);
+      listarProdutos();
+    }
+
+    async function listarProdutos() {
+      const { data, error } = await supabase.from('produtos').select('*').eq('loja', loja);
+      if (error) return alert('Erro ao carregar produtos');
+
+      const lista = document.getElementById('listaProdutos');
+      lista.innerHTML = '';
+      data.forEach(prod => {
+        const div = document.createElement('div');
+        div.className = 'produto';
+        div.innerHTML = `
+          <strong>${prod.nome}</strong><br>
+          R$ ${prod.preco.toFixed(2)}<br>
+          <button onclick="excluirProduto(${prod.id})">Excluir</button>
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    async function excluirProduto(id) {
+      const { error } = await supabase.from('produtos').delete().eq('id', id);
+      if (error) return alert('Erro ao excluir');
+      listarProdutos();
+    }
+
+    listarProdutos();
+  </script>
 </body>
 </html>
